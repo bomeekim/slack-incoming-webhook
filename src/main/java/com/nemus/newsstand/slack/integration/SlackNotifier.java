@@ -18,7 +18,7 @@ public class SlackNotifier {
 	private RestTemplate restTemplate;
 
 	public enum SlackTarget {
-		// TODO webHookUrl 은 자신의 슬랙 IncomingWebHookAPI로 변경하세요.
+		
 		CH_NEWS_STAND("https://hooks.slack.com/services/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", "article");
 
 		String webHookUrl;

@@ -39,13 +39,9 @@ public class SlackSendController {
 	@Autowired
 	private SlackNotifier slackNotifier;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String news() {
-		return "news";
-	}
-
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	public ResponseEntity<Boolean> send(@RequestBody SlackMessageAttachment message) throws IOException {
+		
 		List<SlackMessageAttachment> articles = new ArrayList<>();
 
 		message.setText("[오늘의 IT 업계 소식] " + getDate());
@@ -59,23 +55,17 @@ public class SlackSendController {
 
 	@Scheduled(cron="0 30 9,15 ? * MON-FRI")
 	public void updateNews() throws IOException {
-		System.out.println("[fixedRate]The time is now " + dateFormat.format(new Date()));
-
-		int i = 1;
-
+		
 		Document naverNews = Jsoup.connect("http://news.naver.com/main/main.nhn?mode=LSD&mid=shm&sid1=105").get();
 		Elements elements = naverNews.select("table.container tbody tr ul.type02_headline li");
 
 		for (Element element : elements) {
 			SlackMessageAttachment attachement = new SlackMessageAttachment();
 
-			attachement.setTitle(
-					"* " + element.select("a strong").text() + " / " + element.getElementsByTag("span").text());
-			attachement.setTitle_link(element.getElementsByTag("a").attr("href")); // link
+			attachement.setTitle("* " + element.select("a strong").text() + " / " + element.getElementsByTag("span").text());
+			attachement.setTitle_link(element.getElementsByTag("a").attr("href"));
 
 			temp.add(attachement);
-			System.out.println("text : " + element.text());
-			System.out.println("Uri : " + element.getElementsByTag("a").attr("href"));
 		}
 
 		for (SlackMessageAttachment a : temp) {
